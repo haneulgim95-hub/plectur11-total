@@ -1,11 +1,11 @@
 import { useState, type SubmitEvent, useEffect } from "react";
 import styled from "styled-components";
-import { FaPlus } from "react-icons/fa";
+import { FaCheck, FaPlus, FaTrash } from "react-icons/fa";
 
 type TodoType = {
     id: number;
     text: string;
-    isComplete: boolean;
+    isCompleted: boolean;
 }
 
 const Container = styled.div`
@@ -63,6 +63,53 @@ const AddButton = styled.button`
     }
 `;
 
+const TodoList = styled.ul`
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+`;
+
+const TodoItem = styled.li<{ $isCompleted: boolean}>` 
+    background-color: ${props => props.theme.colors.background.paper};
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid ${props => props.theme.colors.divider};
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.5s;
+    
+    &:hover {
+        border-color: ${props => props.theme.colors.primary};
+    }
+    
+    span {
+        flex: 1;
+        font-size: 16px;
+        color: ${props => props.$isCompleted ? props.theme.colors.text.disabled : props.theme.colors.text.default};
+        text-decoration: ${props => props.$isCompleted ? "line-through" : "none"};
+    }
+`;
+
+const IconButton = styled.button<{ $colorType: "success" | "error"}>`
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    opacity: 0.6;
+    transition: all 0.3s;
+    /* color: ${props => props.$colorType === "success" ? props.theme.colors.success : props.theme.colors.error}; */
+    color: ${props => props.theme.colors[props.$colorType]};
+    // 마침표 연결법을 쓸 떄에는 꼭 key가 영어 이어야 함 (변수 x ). props.$colorType은 props로 전달한 변수이기 때문에.
+    
+    &:hover {
+        opacity: 1;
+    }
+`;
+
 function TodoPage() {
     const [inputValue, setInputValue] = useState(""); // 인풋에 입력된 값을 관리
     const [todos, setTodos] = useState<TodoType[]>(() => {
@@ -81,7 +128,7 @@ function TodoPage() {
         const newTodo: TodoType = {
             id: Date.now(),     // 고유값으로, 사용자가 "저장하는 지금 시간"을 id로 쓰겠다.
             text: inputValue,
-            isComplete: false
+            isCompleted: false
         }
         setTodos([...todos, newTodo]);
 
@@ -93,6 +140,16 @@ function TodoPage() {
         // 그 값을 localStorage에 저장하기 위해서(문자열만 저장 가능) 객체나 배열은 JSON형식으로 바꿔줄 필요가 있음
         localStorage.setItem("todos", JSON.stringify(todos));
     }, [todos]);
+
+    const toggleTodo = (id: number) => {
+        setTodos(todos.map((value) => {
+            return value.id === id ? { ...value, isCompleted: !value.isCompleted} : value;
+        }));
+    };
+
+    const deleteTodo = (id: number) => {
+        setTodos(todos.filter(value => value.id !== id));
+    };
 
     return (
         <Container>
@@ -107,11 +164,20 @@ function TodoPage() {
                 </AddButton>
             </InputSection>
 
-            <ul>
+            <TodoList>
                 {todos.map((value, index) => (
-                    <li key={index}>{value.text}</li>
+                    <TodoItem key={index} $isCompleted={value.isCompleted}>
+                         {/*(event) => {} 만 쓰면, event에는 우리가 필요한 value.id라고 하는 존재가 없다*/}
+                        <IconButton $colorType={"success"} onClick={() => toggleTodo(value.id)}>
+                            <FaCheck />
+                        </IconButton>
+                        <span>{value.text}</span>
+                        <IconButton $colorType={"error"} onClick={() => deleteTodo(value.id)}>
+                            <FaTrash />
+                        </IconButton>
+                    </TodoItem>
                 ))}
-            </ul>
+            </TodoList>
         </Container>
     );
 }
