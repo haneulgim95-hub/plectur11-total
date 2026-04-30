@@ -143,7 +143,11 @@ function TodoPage() {
 
     const toggleTodo = (id: number) => {
         setTodos(todos.map((value) => {
-            return value.id === id ? { ...value, isCompleted: !value.isCompleted} : value;
+            return value.id === id ? { ...value, isCompleted: !value.isCompleted } : value;
+            // { ...value, isCompleted: !value.isCompleted }
+            // 이건 단순히 “펼친다”가 아니라
+            // 👉 기존 value를 복사해서 새로운 객체를 만든 뒤
+            // 👉 isCompleted만 덮어쓴 것 , 목적 → 원본을 건드리지 않고 새로운 객체 만들기
         }));
     };
 
