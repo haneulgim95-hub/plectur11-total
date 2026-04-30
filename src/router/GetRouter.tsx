@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import MainLayout from "../layouts/MainLayout.tsx";
 import Home from "../pages/Home.tsx";
-import Todo from "../pages/Todo.tsx";
+import TodoPage from "../pages/todo/TodoPage.tsx";
 
 const GetRouter = createBrowserRouter([
     {
@@ -9,7 +9,7 @@ const GetRouter = createBrowserRouter([
         element: <MainLayout/>,
         children: [
             {index: true, element: <Home/>},
-            {path: "/todo", element: <Todo/>}
+            {path: "/todo", element: <TodoPage/>}
         ]
     },
 ]);
