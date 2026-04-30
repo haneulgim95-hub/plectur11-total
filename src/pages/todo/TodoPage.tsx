@@ -1,6 +1,12 @@
-import { useState, type SubmitEvent } from "react";
+import { useState, type SubmitEvent, useEffect } from "react";
 import styled from "styled-components";
 import { FaPlus } from "react-icons/fa";
+
+type TodoType = {
+    id: number;
+    text: string;
+    isComplete: boolean;
+}
 
 const Container = styled.div`
     max-width: 600px;
@@ -59,16 +65,34 @@ const AddButton = styled.button`
 
 function TodoPage() {
     const [inputValue, setInputValue] = useState(""); // 인풋에 입력된 값을 관리
-    const [todos, setTodos] = useState<string[]>([]); // 할 일 목록을 관리
+    const [todos, setTodos] = useState<TodoType[]>(() => {
+        // todos라는 state가 TodoPage 컴포넌트가 불러와질 때 마련되는데,
+        // 그 저장소의 초기값은 이 함수에서 리턴된 값으로 결정됨
+        // localStorage에서 "todos"라는 키를 가진 값을 불러오고
+        // 그 값이 있으면 Javascript의 객체(배열) 형태로 변환해서 저장하고, 없으면 빈 배열을 리턴
+        const storedTodos = localStorage.getItem("todos");
+        return storedTodos ? JSON.parse(storedTodos) : [];
+    }); // 할 일 목록을 관리
 
     const handleAddTodo = (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (!inputValue.trim()) return;
-        setTodos([...todos, inputValue]);
+        const newTodo: TodoType = {
+            id: Date.now(),     // 고유값으로, 사용자가 "저장하는 지금 시간"을 id로 쓰겠다.
+            text: inputValue,
+            isComplete: false
+        }
+        setTodos([...todos, newTodo]);
 
         setInputValue("");
     };
+
+    useEffect(() => {
+        // todos라는 state는 현재 Array를 저장하고 있기 때문에
+        // 그 값을 localStorage에 저장하기 위해서(문자열만 저장 가능) 객체나 배열은 JSON형식으로 바꿔줄 필요가 있음
+        localStorage.setItem("todos", JSON.stringify(todos));
+    }, [todos]);
 
     return (
         <Container>
@@ -85,7 +109,7 @@ function TodoPage() {
 
             <ul>
                 {todos.map((value, index) => (
-                    <li key={index}>{value}</li>
+                    <li key={index}>{value.text}</li>
                 ))}
             </ul>
         </Container>
