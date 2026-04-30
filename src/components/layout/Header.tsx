@@ -48,14 +48,12 @@ const NavItem = styled(Link)<{ $isActive: boolean }>`
         props.$isActive ? props.theme.colors.primary : props.theme.colors.text.disabled};
     background-color: ${props =>
         props.$isActive ? props.theme.colors.background.default : "transparent"};
-    border: ${props => props.theme.colors.divider};
     border-radius: 8px;
     font-weight: 800;
     font-size: 16px;
 
     &:hover {
-        border-color: ${props => props.theme.colors.primary};
-        color: ${props => props.theme.colors.primary};
+        background-color: ${props => props.theme.colors.background.default};
     }
 `;
 
@@ -73,7 +71,7 @@ const ThemeToggleButton = styled.button`
     transition: all 0.5s;
     background-color: ${props => props.theme.colors.background.default};
     color: ${props => props.theme.colors.text.default};
-    border: ${props => props.theme.colors.divider};
+    border: 1px solid ${props => props.theme.colors.divider};
 
     &:hover {
         border-color: ${props => props.theme.colors.primary};
@@ -124,6 +122,10 @@ function Header() {
     // useTheme() : styled-components가 제공하는 측
     // 현재 테마에 해당하는 테마 정보를 리턴하는 메소드
     const palette = useTheme();
+
+    //useLocation(): react-router가 제공하는 현재사옹자 위치한 주소를 벌어오는 메서드
+    // 위치한 주소등의 정보가 객체 상태로 리턴됨
+    // 꺼낸이유 주소 "/" -> Home메뉴각 색상이 칠해지도록 하고 싶다.
     const { pathname } = useLocation();
     const { theme, toggleTheme } = useContext(ThemeContext);
 
@@ -134,6 +136,8 @@ function Header() {
             </Logo>
             <NavMenu>
                 {menuList.map((value, index) => (
+                    // styled-components로 만들어진 컴포넌트에게 데이터를 전달해줄 때에는
+                    // props로 전달해줘야 하지만, 그 속성명 앞에 $를 붙여서 styled-components에서 이용할 수 있도록 함
                     <NavItem
                         to={value.path}
                         key={index}

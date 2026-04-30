@@ -21,6 +21,7 @@ const WelcomeSection = styled.section`
     border-radius: 20px;
     background-color: ${props => props.theme.colors.background.paper};
     border: 1px solid ${props => props.theme.colors.divider};
+    transition: all 0.5s;
 `;
 
 const Title = styled.h2`
@@ -56,7 +57,6 @@ const Card = styled(Link)`
 
     &:hover {
         transform: translateY(-5px);
-        border-color: ${props => props.theme.colors.primary};
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
     }
 `;
