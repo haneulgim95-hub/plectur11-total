@@ -39,7 +39,7 @@ function CoinPage() {
     return (
         <Container>
             <CoinList coins={coins} loading={loading} selectedCoin={selectedCoin} setSelectedCoin={setSelectedCoin}/>
-            <CoinDetail />
+            <CoinDetail selectedCoin={selectedCoin}/>
         </Container>
     );
 }

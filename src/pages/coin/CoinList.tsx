@@ -1,7 +1,7 @@
 import type { CoinType } from "./CoinPage.tsx";
 import type { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
-import { FaBitcoin } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaBitcoin } from "react-icons/fa";
 
 type PropsType = {
     coins: CoinType[];
@@ -54,7 +54,7 @@ const CoinUl = styled.ul`
     }
 `;
 
-const CoinLi = styled.li`
+const CoinLi = styled.li<{$isSelectedCoin: boolean}>`
     padding: 15px 20px;
     border-bottom: 1px solid ${props => props.theme.colors.divider};
     cursor: pointer;
@@ -62,6 +62,9 @@ const CoinLi = styled.li`
     justify-content: space-between;
     align-items: center;
     transition: all 0.3s;
+    border-left: 4px solid ${props => props.$isSelectedCoin ? props.theme.colors.primary : "transparent"};
+    background-color: ${props => props.$isSelectedCoin ? props.theme.colors.divider : "transparent"};
+    
    
     &:hover {
         background-color: ${props => props.theme.colors.divider};
@@ -84,7 +87,7 @@ const CoinNameBox = styled.div`
     }
 `;
 
-const CoinPriceBox = styled.div`
+const CoinPriceBox = styled.div< { $isPositive: boolean}>`
     text-align: right;
     display: flex;
     flex-direction: column;
@@ -98,8 +101,10 @@ const CoinPriceBox = styled.div`
     span {
         font-size: 12px;
         font-weight: 600;
+        color: ${props => props.$isPositive ? props.theme.colors.success : props.theme.colors.error};
     }
 `;
+
 
 
 function CoinList({ coins, loading, selectedCoin, setSelectedCoin }: PropsType) {
@@ -113,18 +118,30 @@ function CoinList({ coins, loading, selectedCoin, setSelectedCoin }: PropsType) 
                 <LoadingMessage>데이터를 불러오는 중...</LoadingMessage>
             ) : (
                 <CoinUl>
-                    {coins.map((value, index) => (
-                        <CoinLi key={index}>
-                            <CoinNameBox>
-                                <strong>{value.name}</strong>
-                                <span>{value.symbol}</span>
-                            </CoinNameBox>
-                            <CoinPriceBox>
-                                <strong>$ {value.price_usd}</strong>
-                                <span>{value.percent_change_24h}</span>
-                            </CoinPriceBox>
-                        </CoinLi>
-                    ))}
+                    {coins.map((value, index) => {
+                        const percentChange = parseFloat(value.percent_change_24h);
+                        const isPositive = percentChange > 0 ;
+
+                        return (
+                            <CoinLi key={index} onClick={() => setSelectedCoin(value)} $isSelectedCoin={selectedCoin?.id === value.id}>
+                                <CoinNameBox>
+                                    <strong>{value.name}</strong>
+                                    <span>{value.symbol}</span>
+                                </CoinNameBox>
+                                <CoinPriceBox $isPositive={isPositive}>
+                                    <strong>$ {value.price_usd}</strong>
+                                    <span>
+                                        {isPositive ? (
+                                            <FaArrowUp size={10} />
+                                        ) : (
+                                            <FaArrowDown size={10} />
+                                        )}
+                                        {value.percent_change_24h}
+                                    </span>
+                                </CoinPriceBox>
+                            </CoinLi>
+                        );
+                    })}
                 </CoinUl>
             )}
         </ListSection>
