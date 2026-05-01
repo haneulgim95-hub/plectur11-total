@@ -1,5 +1,5 @@
 import type { MovieType } from "./MoviePage.tsx";
-import { type Dispatch, type SetStateAction, useEffect } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import MovieSearchBar from "../../components/layout/MovieSearchBar.tsx";
 import { useSearchParams } from "react-router";
 import styled from "styled-components";
@@ -72,7 +72,6 @@ const MovieLi = styled.li<{ $isSelected: boolean }>`
     align-items: center;
     transition: all 0.3s;
     border: 1px solid ${props => props.theme.colors.divider};
-    border-radius: 8px;
     background-color: ${props =>
         props.$isSelected ? props.theme.colors.background.default : "transparent"};
 
@@ -113,6 +112,7 @@ function MovieSearch({
 }: PropsType) {
     const [searchParams] = useSearchParams();
     const k = searchParams.get("keyword");
+    const [error, setErrors] = useState("");
 
     useEffect(() => {
         if (!k) return;
@@ -123,7 +123,10 @@ function MovieSearch({
         fetch(`https://www.omdbapi.com/?apikey=6a0a8eb4&s=${k}`)
             .then(res => res.json())
             .then((json: APIResponseType) => setMovies(json.Search))
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                setErrors("검색하신 키워드로 영화 목록을 불러오는데 실패하였습니다.");
+            })
             .finally(() => setLoading(false));
     }, [k]);
 
@@ -136,10 +139,15 @@ function MovieSearch({
 
             {loading ? (
                 <LoadingMessage>데이터를 불러오는 중</LoadingMessage>
+            ) : error ? (
+                <LoadingMessage>{error}</LoadingMessage>
             ) : (
                 <MovieUl>
                     {movies.map(value => (
-                        <MovieLi key={value.imdbID} $isSelected={selectedMovie?.imdbID === value.imdbID} onClick={() => setSelectedMovie(value)}>
+                        <MovieLi
+                            key={value.imdbID}
+                            $isSelected={selectedMovie?.imdbID === value.imdbID}
+                            onClick={() => setSelectedMovie(value)}>
                             <MovieImage src={value.Poster} alt={value.imdbID} />
                             <Info>
                                 <Title>{value.Title}</Title>
