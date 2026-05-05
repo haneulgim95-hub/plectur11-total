@@ -1,21 +1,22 @@
-import type { MovieType } from "./MoviePage.tsx";
-import { type Dispatch, type SetStateAction, useEffect} from "react";
-import MovieSearchBar from "../../components/layout/MovieSearchBar.tsx";
-import { useSearchParams } from "react-router";
+import  { type Dispatch, type SetStateAction, useEffect } from "react";
+import type { BookItem } from "./BookPage.tsx";
 import styled from "styled-components";
 import { FaSearch } from "react-icons/fa";
+import BookSearchBar from "../../components/layout/BookSearchBar.tsx";
+import { useSearchParams } from "react-router";
 
-type APIResponseType = {
-    Search: MovieType[];
-};
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
 type PropsType = {
-    movies: MovieType[];
-    setMovies: Dispatch<SetStateAction<MovieType[]>>;
-    loading: boolean;
-    selectedMovie: MovieType | null;
-    setSelectedMovie: Dispatch<SetStateAction<MovieType | null>>;
+    books: BookItem[];
+    setBooks: Dispatch<SetStateAction<BookItem[]>>;
+    selectedBook: BookItem | null;
+    setSelectedBook: Dispatch<SetStateAction<BookItem | null>>;
     setLoading: Dispatch<SetStateAction<boolean>>;
+};
+
+type APIResponseType = {
+    Search: BookItem[];
 };
 
 const ListSection = styled.aside`
@@ -40,8 +41,7 @@ const ListHeader = styled.div`
     gap: 10px;
 `;
 
-
-const MovieUl = styled.ul`
+const BookUl = styled.ul`
     list-style: none;
     flex: 1;
     display: flex;
@@ -58,7 +58,7 @@ const MovieUl = styled.ul`
     }
 `;
 
-const MovieLi = styled.li<{ $isSelected: boolean }>`
+const BookLi = styled.li<{ $isSelected: boolean }>`
     flex: 1;
     padding: 15px 20px;
     cursor: pointer;
@@ -68,14 +68,14 @@ const MovieLi = styled.li<{ $isSelected: boolean }>`
     transition: all 0.3s;
     border: 1px solid ${props => props.theme.colors.divider};
     border-left: 4px solid
-        ${props => (props.$isSelected ? props.theme.colors.primary : props.theme.colors.divider)};
+    ${props => (props.$isSelected ? props.theme.colors.primary : props.theme.colors.divider)};
 
     &:hover {
         background-color: ${props => props.theme.colors.divider};
     }
 `;
 
-const MovieImage = styled.img`
+const BookImage = styled.img`
     width: 80px;
     height: 90px;
     object-fit: cover;
@@ -97,12 +97,18 @@ const Year = styled.span`
     color: #888;
 `;
 
-function MovieSearch({
-    movies,
-    setMovies,
-    setLoading,
-    selectedMovie,
-    setSelectedMovie,
+const NoCover = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: ${props => props.theme.colors.text.disabled};
+`;
+
+function BookSearch({
+    books,
+    setBooks,
+    selectedBook,
+    setSelectedBook,
 }: PropsType) {
     const [searchParams] = useSearchParams();
     const k = searchParams.get("keyword");
@@ -110,41 +116,35 @@ function MovieSearch({
     useEffect(() => {
         if (!k) return;
 
-        setLoading(true);
-        setMovies([]);
+        setBooks([]);
 
-        fetch(`https://www.omdbapi.com/?apikey=6a0a8eb4&s=${k}`)
+        fetch(`https://www.googleapis.com/books/v1/volumes?q=${k}&maxResults=20&key=${API_KEY}`)
             .then(res => res.json())
-            .then((json: APIResponseType) => setMovies(json.Search))
-            .catch(err => {
-                console.log(err);
-            })
-            .finally(() => setLoading(false));
+            .then((json: APIResponseType) => setBooks(json.Search))
+            .catch(err => console.log(err))
     }, [k]);
 
     return (
         <ListSection>
             <ListHeader>
                 <FaSearch />
-                <MovieSearchBar />
+                <BookSearchBar />
             </ListHeader>
 
-            <MovieUl>
-                {movies.map(value => (
-                    <MovieLi
-                        key={value.imdbID}
-                        $isSelected={selectedMovie?.imdbID === value.imdbID}
-                        onClick={() => setSelectedMovie(value)}>
-                        <MovieImage src={value.Poster} alt={value.imdbID} />
+            <BookUl>
+                {books.map(value => (
+                    <BookLi key={value.id} $isSelected={selectedBook?.id === value.id} onClick={() => setSelectedBook(value)}>
+                        {value.volumeInfo.imageLinks?.thumbnail ? <BookImage src={value.volumeInfo.imageLinks.thumbnail} alt={value.volumeInfo.title} /> : <NoCover>NoCover</NoCover>}
+
                         <Info>
-                            <Title>{value.Title}</Title>
-                            <Year>{value.Year}</Year>
+                            <Title>{value.volumeInfo.title}</Title>
+                            <Year>{value.volumeInfo.authors?.join(", ")}</Year>
                         </Info>
-                    </MovieLi>
+                    </BookLi>
                 ))}
-            </MovieUl>
+            </BookUl>
         </ListSection>
     );
 }
 
-export default MovieSearch;
+export default BookSearch;

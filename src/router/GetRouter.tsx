@@ -7,6 +7,7 @@ import MoviePage from "../pages/movie/MoviePage.tsx";
 import BoardDetail from "../pages/board/BoardDetail.tsx";
 import BoardPage from "../pages/board/BoardPage.tsx";
 import RocketPage from "../pages/rocket/RocketPage.tsx";
+import BookPage from "../pages/book/BookPage.tsx";
 
 const GetRouter = createBrowserRouter([
     {
@@ -24,7 +25,8 @@ const GetRouter = createBrowserRouter([
                     { path: ":id", element: <BoardDetail /> },
                 ],
             },
-            { path: "rocket", element: <RocketPage/>}
+            { path: "rocket", element: <RocketPage/>},
+            { path: "book", element: <BookPage/>}
         ],
     },
 ]);
