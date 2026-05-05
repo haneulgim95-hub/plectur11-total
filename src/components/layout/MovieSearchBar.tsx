@@ -52,7 +52,7 @@ function MovieSearchBar() {
 
     return (
         <Box onSubmit={onSubmit}>
-            <Input onChange={onChange}></Input>
+            <Input onChange={onChange} placeholder={"영화를 검색해주세요."}></Input>
             <Button type={"submit"}>검색</Button>
         </Box>
     );

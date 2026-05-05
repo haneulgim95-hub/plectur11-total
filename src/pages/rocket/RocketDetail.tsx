@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 type PropsType = {
     selectedRocket: RocketType | null;
-}
+};
 
 const DetailSection = styled.div`
     flex: 1;
@@ -15,7 +15,6 @@ const DetailSection = styled.div`
     background-color: ${props => props.theme.colors.background.paper};
     border: 1px solid ${props => props.theme.colors.divider};
 `;
-
 
 const EmptyDetail = styled.div`
     flex: 1;
@@ -38,6 +37,7 @@ const Container = styled.article`
     max-width: 900px;
     margin: 0 auto;
     padding: 24px;
+    overflow-y: auto;
 `;
 
 const BackBtn = styled.button`
@@ -82,6 +82,50 @@ const RocketImage = styled.img`
     }
 `;
 
+const Info = styled.div`
+    padding: 40px;
+    
+`;
+
+const RocketName = styled.span`
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: ${props => props.theme.colors.primary}
+`;
+
+const Description = styled.p`
+    font-size: 1.2rem;
+    color: ${props => props.theme.colors.text.default};
+    line-height: 1.8;
+    margin-bottom: 32px;
+`;
+
+const Specs = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+`;
+
+const SpecItem = styled.div`
+    display: flex;
+    justify-content: space-between;
+`;
+
+const Label = styled.span`
+    color: ${props => props.theme.colors.text.default};
+    font-weight: 600;
+`;
+
+const Value = styled.span`
+    color: ${props => props.theme.colors.text.disabled};
+`;
+
+const Active = styled.span<{$isActive:boolean}>`
+    color: ${props => props.$isActive? "#10b981" : "#ef4444"}
+`;
 function RocketDetail({ selectedRocket }: PropsType) {
     if (!selectedRocket) {
         return (
@@ -108,34 +152,29 @@ function RocketDetail({ selectedRocket }: PropsType) {
                         </ImageWrapper>
                     )}
 
-                    {/*<div className={styles.info}>*/}
-                    {/*    /!* h1은 block요소라, background가 width: 100%로 적용 중*/}
-                    {/*그래서, 그 안에 span으로 inline을 주고, style을 적용*!/*/}
-                    {/*    <h1>*/}
-                    {/*        <span className={styles.name}>{rocket.name}</span>*/}
-                    {/*    </h1>*/}
-                    {/*    <p className={styles.description}>{rocket.description}</p>*/}
-                    {/*    <div className={styles.specs}>*/}
-                    {/*        <div className={styles.specItem}>*/}
-                    {/*            <span className={styles.label}>발사 비용</span>*/}
-                    {/*            <span className={styles.value}>*/}
-                    {/*                $ {rocket.cost_per_launch.toLocaleString()}*/}
-                    {/*            </span>*/}
-                    {/*        </div>*/}
-                    {/*        <div className={styles.specItem}>*/}
-                    {/*            <span className={styles.label}>제조 국가</span>*/}
-                    {/*            <span className={styles.value}>{rocket.country}</span>*/}
-                    {/*        </div>*/}
-                    {/*        <div className={styles.specItem}>*/}
-                    {/*            <span className={styles.label}>상태</span>*/}
-                    {/*            <span*/}
-                    {/*                className={styles.value}*/}
-                    {/*                style={{ color: rocket.active ? "#10b981" : "#ef4444" }}>*/}
-                    {/*                {rocket.active ? "운용 중" : "비운용"}*/}
-                    {/*            </span>*/}
-                    {/*        </div>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
+                    <Info>
+                        <h1>
+                            <RocketName>{selectedRocket.name}</RocketName>
+                        </h1>
+                        <Description>{selectedRocket.description}</Description>
+                        <Specs>
+                            <SpecItem>
+                                <Label>발사 비용</Label>
+                                <Value>$ {selectedRocket.cost_per_launch.toLocaleString()}</Value>
+                            </SpecItem>
+                            <SpecItem>
+                                <Label>제조 국가</Label>
+                                <Value>{selectedRocket.country}</Value>
+                            </SpecItem>
+                            <SpecItem>
+                                <Label>상태</Label>
+                                <Active
+                                    $isActive={selectedRocket.active}>
+                                    {selectedRocket.active ? "운용 중" : "비운용"}
+                                </Active>
+                            </SpecItem>
+                        </Specs>
+                    </Info>
                 </Article>
             </Container>
         </DetailSection>

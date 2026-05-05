@@ -1,5 +1,5 @@
 import type { MovieType } from "./MoviePage.tsx";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect} from "react";
 import MovieSearchBar from "../../components/layout/MovieSearchBar.tsx";
 import { useSearchParams } from "react-router";
 import styled from "styled-components";
@@ -40,11 +40,6 @@ const ListHeader = styled.div`
     gap: 10px;
 `;
 
-const LoadingMessage = styled.div`
-    padding: 20px;
-    text-align: center;
-    color: ${props => props.theme.colors.text.disabled};
-`;
 
 const MovieUl = styled.ul`
     list-style: none;
@@ -105,14 +100,12 @@ const Year = styled.span`
 function MovieSearch({
     movies,
     setMovies,
-    loading,
     setLoading,
     selectedMovie,
     setSelectedMovie,
 }: PropsType) {
     const [searchParams] = useSearchParams();
     const k = searchParams.get("keyword");
-    const [error, setErrors] = useState("");
 
     useEffect(() => {
         if (!k) return;
@@ -125,7 +118,6 @@ function MovieSearch({
             .then((json: APIResponseType) => setMovies(json.Search))
             .catch(err => {
                 console.log(err);
-                setErrors("검색하신 키워드로 영화 목록을 불러오는데 실패하였습니다.");
             })
             .finally(() => setLoading(false));
     }, [k]);
@@ -137,26 +129,20 @@ function MovieSearch({
                 <MovieSearchBar />
             </ListHeader>
 
-            {loading ? (
-                <LoadingMessage>데이터를 불러오는 중</LoadingMessage>
-            ) : error ? (
-                <LoadingMessage>{error}</LoadingMessage>
-            ) : (
-                <MovieUl>
-                    {movies.map(value => (
-                        <MovieLi
-                            key={value.imdbID}
-                            $isSelected={selectedMovie?.imdbID === value.imdbID}
-                            onClick={() => setSelectedMovie(value)}>
-                            <MovieImage src={value.Poster} alt={value.imdbID} />
-                            <Info>
-                                <Title>{value.Title}</Title>
-                                <Year>{value.Year}</Year>
-                            </Info>
-                        </MovieLi>
-                    ))}
-                </MovieUl>
-            )}
+            <MovieUl>
+                {movies.map(value => (
+                    <MovieLi
+                        key={value.imdbID}
+                        $isSelected={selectedMovie?.imdbID === value.imdbID}
+                        onClick={() => setSelectedMovie(value)}>
+                        <MovieImage src={value.Poster} alt={value.imdbID} />
+                        <Info>
+                            <Title>{value.Title}</Title>
+                            <Year>{value.Year}</Year>
+                        </Info>
+                    </MovieLi>
+                ))}
+            </MovieUl>
         </ListSection>
     );
 }
