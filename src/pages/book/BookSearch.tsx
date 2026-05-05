@@ -12,7 +12,6 @@ type PropsType = {
     setBooks: Dispatch<SetStateAction<BookItem[]>>;
     selectedBook: BookItem | null;
     setSelectedBook: Dispatch<SetStateAction<BookItem | null>>;
-    setLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 type APIResponseType = {
