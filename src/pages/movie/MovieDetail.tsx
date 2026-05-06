@@ -16,7 +16,7 @@ type MovieDetail = {
     Director: string;
 };
 
-const DetailSection = styled.div`
+export const DetailSection = styled.div`
     flex: 2;
     border-radius: 16px;
     padding: 40px;
@@ -26,7 +26,7 @@ const DetailSection = styled.div`
     border: 1px solid ${props => props.theme.colors.divider};
 `;
 
-const EmptyDetail = styled.div`
+export const EmptyDetail = styled.div`
     flex: 1;
     display: flex;
     flex-direction: column;

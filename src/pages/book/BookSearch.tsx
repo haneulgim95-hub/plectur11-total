@@ -15,7 +15,7 @@ type PropsType = {
 };
 
 type APIResponseType = {
-    Search: BookItem[];
+    items: BookItem[];
 };
 
 const ListSection = styled.aside`
@@ -96,7 +96,7 @@ const Year = styled.span`
     color: #888;
 `;
 
-const NoCover = styled.div`
+export const NoCover = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -119,7 +119,7 @@ function BookSearch({
 
         fetch(`https://www.googleapis.com/books/v1/volumes?q=${k}&maxResults=20&key=${API_KEY}`)
             .then(res => res.json())
-            .then((json: APIResponseType) => setBooks(json.Search))
+            .then((json: APIResponseType) => setBooks(json.items))
             .catch(err => console.log(err))
     }, [k]);
 
